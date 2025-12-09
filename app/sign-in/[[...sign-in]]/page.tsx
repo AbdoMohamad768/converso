@@ -1,9 +1,11 @@
-import { PricingTable } from "@clerk/nextjs";
+"use client";
+
+import { SignIn } from "@clerk/nextjs";
 
 function Page() {
   return (
     <main className="flex items-center justify-center">
-      <PricingTable />
+      <SignIn />
     </main>
   );
 }
