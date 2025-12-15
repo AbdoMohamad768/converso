@@ -1,5 +1,109 @@
-function Page() {
-  return <div>Profile</div>;
+import CompanionsList from "@/components/CompanionsList";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
+  getUserCompanions,
+  getUserSessions,
+} from "@/lib/actions/companion.action";
+import { currentUser } from "@clerk/nextjs/server";
+import Image from "next/image";
+import { redirect } from "next/navigation";
+
+async function Page() {
+  const user = await currentUser();
+
+  if (!user) redirect("/sign-in");
+
+  const companions = await getUserCompanions(user.id);
+  const sessionHistory = await getUserSessions(user.id, 10);
+
+  return (
+    <main className="lg:w-3/4">
+      <section className="flex justify-between gap-4 max-sm:flex-col items-center">
+        <div className="flex gap-4 items-center">
+          <Image src={user.imageUrl} alt="User" width={110} height={110} />
+
+          <div className="flex flex-col gap-2">
+            <h1 className="font-bold text-2xl">
+              {user.firstName} {user.lastName}
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              {user.emailAddresses[0].emailAddress}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex gap-4">
+          <div className="border border-black rounded-lg p-3 gap-2 flex flex-col h-fit">
+            <div className="flex items-center gap-2">
+              <Image
+                src="/icons/check.svg"
+                alt="Check"
+                width={22}
+                height={22}
+              />
+              <p className="text-2xl font-bold">{sessionHistory.length}</p>
+            </div>
+            <div>Lessons Completed</div>
+          </div>
+
+          <div className="border border-black rounded-lg p-3 gap-2 flex flex-col h-fit">
+            <div className="flex items-center gap-2">
+              <Image src="/icons/cap.svg" alt="Check" width={22} height={22} />
+              <p className="text-2xl font-bold">{companions.length}</p>
+            </div>
+            <div>Companions Created</div>
+          </div>
+        </div>
+      </section>
+
+      <Accordion type="multiple" className="w-full">
+        <AccordionItem value="recent">
+          <AccordionTrigger className="text-2xl font-bold">
+            Recent Sessions
+          </AccordionTrigger>
+          <AccordionContent className="flex flex-col gap-4 text-balance">
+            <CompanionsList
+              title="Recent Sessions"
+              companions={sessionHistory}
+              classNames="w-full"
+            />
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="companions">
+          <AccordionTrigger className="text-2xl font-bold">
+            My Companions {`(${companions.length})`}
+          </AccordionTrigger>
+          <AccordionContent className="flex flex-col gap-4 text-balance">
+            <CompanionsList
+              title="My Companions"
+              companions={companions}
+              classNames="w-full"
+            />
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="recent">
+          <AccordionTrigger>Return Policy</AccordionTrigger>
+          <AccordionContent className="flex flex-col gap-4 text-balance">
+            <p>
+              We stand behind our products with a comprehensive 30-day return
+              policy. If you&apos;re not completely satisfied, simply return the
+              item in its original condition.
+            </p>
+            <p>
+              Our hassle-free return process includes free return shipping and
+              full refunds processed within 48 hours of receiving the returned
+              item.
+            </p>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </main>
+  );
 }
 
 export default Page;

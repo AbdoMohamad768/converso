@@ -16,8 +16,6 @@ async function Page({ searchParams }: SearchParams) {
     topic,
   });
 
-  console.log("Test Page");
-
   // const { userId: author } = await auth();
 
   // if (!author) redirect("/sign-in");
@@ -31,7 +29,7 @@ async function Page({ searchParams }: SearchParams) {
           <SubjectFilter />
         </div>
       </section>
-      <section className="companion-grid">
+      <section className="companions-grid">
         {companions.map((companion) => (
           <CompanionCard
             color={getSubjectColor(companion.subject)}

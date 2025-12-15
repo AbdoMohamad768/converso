@@ -50,3 +50,113 @@ export async function getAllCompanion({
 
   return companions;
 }
+
+export async function getCompanion(id: string) {
+  const supabase = craeteSupabaseClient();
+
+  const { data, error } = await supabase
+    .from("companions")
+    .select()
+    .eq("id", id);
+
+  if (error || !data) {
+    console.error(error.message || "Failed to get the companion");
+    // throw new Error(error.message || "Failed to get the companion");
+  }
+
+  return data![0];
+}
+
+export async function addToSessionHistory(companionId: string) {
+  const supabase = craeteSupabaseClient();
+  const { userId } = await auth();
+
+  const { data, error } = await supabase
+    .from("session_history")
+    .insert({ user_id: userId, companion_id: companionId });
+
+  if (error) {
+    console.error(error.message || "Failed to Add Session");
+    throw new Error(error.message || "Failed to Add Session");
+  }
+
+  return data;
+}
+
+export async function getRecentSessions(limit = 10) {
+  const supabase = craeteSupabaseClient();
+
+  const { data, error } = await supabase
+    .from("session_history")
+    .select("companions:companion_id(*)")
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error(error.message || "Failed to get sessions");
+    throw new Error(error.message || "Failed to get sessions");
+  }
+
+  return data.map(({ companions }) => companions);
+}
+
+export async function getUserSessions(userId: string, limit = 10) {
+  const supabase = craeteSupabaseClient();
+
+  const { data, error } = await supabase
+    .from("session_history")
+    .select("companions:companion_id(*)")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error(error.message || "Failed to get sessions");
+    throw new Error(error.message || "Failed to get sessions");
+  }
+
+  return data.map(({ companions }) => companions);
+}
+
+export async function getUserCompanions(userId: string) {
+  const supabase = craeteSupabaseClient();
+
+  const { data, error } = await supabase
+    .from("companions")
+    .select()
+    .eq("author", userId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(error.message || "Failed to get companions");
+    throw new Error(error.message || "Failed to get companions");
+  }
+
+  return data;
+}
+
+export async function newCompanionPermission() {
+  const { userId, has } = await auth();
+  const supabase = craeteSupabaseClient();
+
+  let limit = 0;
+
+  if (has({ plan: "pro" })) return true;
+  else if (has({ feature: "3_active_companions" })) limit = 3;
+  else if (has({ feature: "10_active_companions" })) limit = 10;
+
+  const { data, error } = await supabase
+    .from("companions")
+    .select("id", { count: "exact" })
+    .eq("author", userId);
+
+  if (error) {
+    console.error(error.message || "Failed to get companions");
+    throw new Error(error.message || "Failed to get companions");
+  }
+
+  const companionCount = data.length;
+
+  if (companionCount >= limit) return false;
+  else return true;
+}
