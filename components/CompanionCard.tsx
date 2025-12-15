@@ -8,6 +8,9 @@ interface CompanionCardProps {
   duration: number;
   color: string;
   subject: string;
+
+  bookmarks: string[];
+  handleBookmark: (id: string) => void;
 }
 
 function CompanionCard({
@@ -17,14 +20,22 @@ function CompanionCard({
   duration,
   color,
   subject,
+
+  bookmarks,
+  handleBookmark,
 }: CompanionCardProps) {
   return (
     <article className="companion-card" style={{ backgroundColor: color }}>
       <div className="flex justify-between items-center">
         <div className="subject-badge">{subject}</div>
-        <button className="companion-bookmark">
+        <button
+          className="companion-bookmark"
+          onClick={() => handleBookmark(id)}
+        >
           <Image
-            src="/icons/bookmark.svg"
+            src={`/icons/bookmark${
+              bookmarks.includes(id) ? "-filled" : ""
+            }.svg`}
             alt="Bookmark"
             width={12.5}
             height={15}
