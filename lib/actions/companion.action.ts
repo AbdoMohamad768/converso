@@ -60,8 +60,7 @@ export async function getCompanion(id: string) {
     .eq("id", id);
 
   if (error || !data) {
-    console.error(error.message || "Failed to get the companion");
-    // throw new Error(error.message || "Failed to get the companion");
+    throw new Error(error.message || "Failed to get the companion");
   }
 
   return data![0];
@@ -76,7 +75,6 @@ export async function addToSessionHistory(companionId: string) {
     .insert({ user_id: userId, companion_id: companionId });
 
   if (error) {
-    console.error(error.message || "Failed to Add Session");
     throw new Error(error.message || "Failed to Add Session");
   }
 
@@ -93,7 +91,6 @@ export async function getRecentSessions(limit = 10) {
     .limit(limit);
 
   if (error) {
-    console.error(error.message || "Failed to get sessions");
     throw new Error(error.message || "Failed to get sessions");
   }
 
@@ -111,7 +108,6 @@ export async function getUserSessions(userId: string, limit = 10) {
     .limit(limit);
 
   if (error) {
-    console.error(error.message || "Failed to get sessions");
     throw new Error(error.message || "Failed to get sessions");
   }
 
@@ -128,7 +124,6 @@ export async function getUserCompanions(userId: string) {
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error(error.message || "Failed to get companions");
     throw new Error(error.message || "Failed to get companions");
   }
 
@@ -151,7 +146,6 @@ export async function newCompanionPermission() {
     .eq("author", userId);
 
   if (error) {
-    console.error(error.message || "Failed to get companions");
     throw new Error(error.message || "Failed to get companions");
   }
 

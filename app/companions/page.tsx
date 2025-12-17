@@ -1,7 +1,8 @@
-import CompanionGrid from "@/components/CompanionGrid";
+import CompanionCard from "@/components/CompanionCard";
 import SearchInput from "@/components/SearchInput";
 import SubjectFilter from "@/components/SubjectFilter";
 import { getAllCompanion } from "@/lib/actions/companion.action";
+import { getSubjectColor } from "@/lib/utils";
 
 async function Page({ searchParams }: SearchParams) {
   const params = await searchParams;
@@ -30,7 +31,13 @@ async function Page({ searchParams }: SearchParams) {
       </section>
 
       <section className="companions-grid">
-        <CompanionGrid companions={companions} />
+        {companions.map((companion) => (
+          <CompanionCard
+            color={getSubjectColor(companion.subject)}
+            key={companion.id}
+            {...companion}
+          />
+        ))}
       </section>
     </main>
   );
