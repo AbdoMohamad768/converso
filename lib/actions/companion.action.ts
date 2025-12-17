@@ -86,7 +86,7 @@ export async function getRecentSessions(limit = 10) {
 
   const { data, error } = await supabase
     .from("session_history")
-    .select("companions:companion_id(*)")
+    .select("id, companions:companion_id(*)")
     .order("created_at", { ascending: false })
     .limit(limit);
 
@@ -94,7 +94,7 @@ export async function getRecentSessions(limit = 10) {
     throw new Error(error.message || "Failed to get sessions");
   }
 
-  return data.map(({ companions }) => companions);
+  return data.map(({ id, companions }) => ({ sessionId: id, ...companions }));
 }
 
 export async function getUserSessions(userId: string, limit = 10) {

@@ -26,6 +26,16 @@ type Companion = Models.DocumentList<Models.Document> & {
   bookmarked: boolean;
 };
 
+type CompanionSessionHistory = Models.DocumentList<Models.Document> & {
+  sessionId: string;
+  $id: string;
+  name: string;
+  subject: Subject;
+  topic: string;
+  duration: number;
+  bookmarked: boolean;
+};
+
 interface CreateCompanion {
   name: string;
   subject: string;
@@ -64,7 +74,6 @@ interface Avatar {
   height: number;
   className?: string;
 }
-
 
 interface SavedMessage {
   role: "user" | "system" | "assistant";
